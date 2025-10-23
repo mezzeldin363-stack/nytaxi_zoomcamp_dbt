@@ -1,0 +1,11 @@
+version: 2
+sources:
+  - name: staging
+    database: zoomcamp-taxi-ny
+    schema: zoomcamp_taxi_ny_mn
+      # loaded_at_field: record_loaded_at
+    tables:
+      - name: green_tripdata
+      - name: yellow_tripdata
+         # freshness:
+           # error_after: {count: 6, period: hour}
