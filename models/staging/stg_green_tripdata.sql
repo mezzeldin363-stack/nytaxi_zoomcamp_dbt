@@ -1,5 +1,15 @@
 {{ config(materialized='view') }}
 
+
+with deduped as (
+    select *,
+           row_number() over(partition by unique_row_id order by lpep_pickup_datetime desc) as rn
+    from {{ source('staging','green_tripdata') }}
+    where vendorid is not null
+)
+
+
+
 select
     -- identifiers
     unique_row_id as tripid,  -- use your Kestra-generated hash id
@@ -30,8 +40,9 @@ select
     coalesce({{ dbt.safe_cast("payment_type", api.Column.translate_type("integer")) }},0) as payment_type,
     {{ get_payment_type_description("payment_type") }} as payment_type_description
 
-from {{ source('staging','green_tripdata') }}
-where vendorid is not null
+from deduped
+where rn = 1 and vendorid is not null
+
 
 {% if var('is_test_run', default=true) %}
 limit 100
