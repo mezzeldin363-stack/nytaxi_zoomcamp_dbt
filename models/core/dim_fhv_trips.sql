@@ -6,7 +6,7 @@
 
 with fhv_data as (
     select *
-    from {{ ref('stg_FHV') }}
+    from {{ ref('stg_fhv_tripdata') }}
 
 ),
 
@@ -28,8 +28,8 @@ pu_zones.borough as pickup_borough,
 pu_zones.zone as pickup_zone,
 do_zones.borough as dropoff_borough,
 do_zones.zone as dropoff_zone,
-sr_flag,
-affiliated_base_number
+fhv_data.sr_flag,
+fhv_data.affiliated_base_number
 from fhv_data
 inner join dim_zones as pu_zones on fhv_data.pickup_locationid = pu_zones.locationid
 inner join dim_zones as do_zones on fhv_data.dropoff_locationid = do_zones.locationid
